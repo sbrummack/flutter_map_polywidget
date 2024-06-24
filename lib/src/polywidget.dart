@@ -9,8 +9,8 @@ import 'package:latlong2/latlong.dart';
 /// should always be added inside PolyWidgetLayer.polyWidgets
 class PolyWidget extends StatelessWidget {
   final LatLng center;
-  final int widthInMeters;
-  final int heightInMeters;
+  final double widthInMeters;
+  final double heightInMeters;
   final double angle;
   final Widget? child;
   final Orientation? forceOrientation;
@@ -33,13 +33,10 @@ class PolyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final mapCamera = MapCamera.of(context);
     Offset centerOffset = mapCamera.getOffsetFromOrigin(center);
-    double width =
-        _calcLength(mapCamera, center, centerOffset, widthInMeters, 90);
-    double height =
-        _calcLength(mapCamera, center, centerOffset, heightInMeters, 180);
+    double width = _calcLength(mapCamera, center, centerOffset, widthInMeters, 90);
+    double height = _calcLength(mapCamera, center, centerOffset, heightInMeters, 180);
 
-    int turns = _calcTurns(width, height, mapCamera.rotation + angle,
-        forceOrientation, noRotation);
+    int turns = _calcTurns(width, height, mapCamera.rotation + angle, forceOrientation, noRotation);
     double rotation = angle - (turns * 90);
 
     if (turns.isOdd) {
@@ -100,12 +97,11 @@ class PolyWidget extends StatelessWidget {
     double yAngle = const Distance().bearing(pointB, approxPointC);
     double cDirection = ((yAngle - xAngle) % 360);
     double cDirectionAngle = cDirection >= 0 && cDirection < 180 ? 90 : -90;
-    LatLng center = const Distance()
-        .offset(centerLine, height / 2, xAngle + cDirectionAngle);
+    LatLng center = const Distance().offset(centerLine, height / 2, xAngle + cDirectionAngle);
     return PolyWidget(
       center: center,
-      widthInMeters: width.toInt(),
-      heightInMeters: height.toInt(),
+      widthInMeters: width,
+      heightInMeters: height,
       angle: xAngle - 90,
       forceOrientation: forceOrientation,
       noRotation: noRotation,
@@ -118,14 +114,12 @@ class PolyWidget extends StatelessWidget {
     MapCamera mapCamera,
     LatLng center,
     Offset centerOffset,
-    int lengthInMeters,
-    int angle,
+    double lengthInMeters,
+    double angle,
   ) {
     LatLng latLng = const Distance().offset(center, lengthInMeters, angle);
     Offset offset = mapCamera.getOffsetFromOrigin(latLng);
-    double width =
-        Offset(offset.dx - centerOffset.dx, offset.dy - centerOffset.dy)
-            .distance;
+    double width = Offset(offset.dx - centerOffset.dx, offset.dy - centerOffset.dy).distance;
     return width;
   }
 
@@ -196,8 +190,7 @@ class _ConstrainedPolyWidgetContent extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = Size(width, height);
     if (!constraints.isSatisfiedBy(size)) {
-      Size constrainedSize =
-          constraints.constrainSizeAndAttemptToPreserveAspectRatio(size);
+      Size constrainedSize = constraints.constrainSizeAndAttemptToPreserveAspectRatio(size);
       return SizedBox.fromSize(
         size: size,
         child: FittedBox(
