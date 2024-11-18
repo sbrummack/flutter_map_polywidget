@@ -17,6 +17,13 @@ class PolyWidget extends StatelessWidget {
   final bool noRotation;
   final BoxConstraints? constraints;
 
+  /// Set to true to optimize the rotation so that the text is always readable
+  /// and not upside down, for example. This optimisation works for all
+  /// polygons which are like rectangles. Try deactivating the optimisation if
+  /// the rotated polygon does not look as you would expect for the given
+  /// rotation.
+  final bool optimiseRotation;
+
   const PolyWidget({
     super.key,
     required this.center,
@@ -26,6 +33,7 @@ class PolyWidget extends StatelessWidget {
     this.forceOrientation,
     bool? noRotation,
     this.constraints,
+    this.optimiseRotation = true,
     required this.child,
   }) : noRotation = noRotation ?? false;
 
@@ -35,14 +43,17 @@ class PolyWidget extends StatelessWidget {
     Offset centerOffset = mapCamera.getOffsetFromOrigin(center);
     double width = _calcLength(mapCamera, center, centerOffset, widthInMeters, 90);
     double height = _calcLength(mapCamera, center, centerOffset, heightInMeters, 180);
+    double rotation = angle;
 
-    int turns = _calcTurns(width, height, mapCamera.rotation + angle, forceOrientation, noRotation);
-    double rotation = angle - (turns * 90);
+    if (optimiseRotation) {
+      int turns = _calcTurns(width, height, mapCamera.rotation + angle, forceOrientation, noRotation);
+      rotation = angle - (turns * 90);
 
-    if (turns.isOdd) {
-      double temp = width;
-      width = height;
-      height = temp;
+      if (turns.isOdd) {
+        double temp = width;
+        width = height;
+        height = temp;
+      }
     }
 
     Offset offset = centerOffset.translate(-width / 2, -height / 2);
