@@ -17,11 +17,9 @@ class PolyWidget extends StatelessWidget {
   final bool noRotation;
   final BoxConstraints? constraints;
 
-  /// Set to true to optimize the rotation so that the text is always readable
-  /// and not upside down, for example. This optimisation works for all
-  /// polygons which are like rectangles. Try deactivating the optimisation if
-  /// the rotated polygon does not look as you would expect for the given
-  /// rotation.
+  /// Set to true to optimize the rotation so that the text is always readable and not upside down, for example. This
+  /// optimisation works for all polygons which are like rectangles. Try deactivating the optimisation if the rotated
+  /// polygon does not look as you would expect for the given rotation.
   final bool optimiseRotation;
 
   const PolyWidget({
